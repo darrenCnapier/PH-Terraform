@@ -59,35 +59,6 @@ variable "staging_db_password" {
 variable "staging_db_name" {
   type = string
 }
-//
-//variable "docs_user" {
-//  type = string
-//}
-//
-//variable "docs_password" {
-//  type = string
-//}
-//
-//variable "twilio_auth_token" {
-//  type = string
-//}
-//
-//variable "twilio_account_id" {
-//  type = string
-//}
-//
-//variable "twilio_phone_number" {
-//  type = string
-//}
-//
-//variable "sentry_dsn" {
-//  type = string
-//}
-//
-//variable "firebase_auth_json" {
-//  type = string
-//}
-//
 //variable "domain_name" {
 //  type = string
 //  default = "uptech.team"
@@ -105,10 +76,4 @@ variable "instance_volume_size" {
   type = number
 }
 
-variable "name_for_cloudwatch_log_group" {
-  type = string
-}
-variable "retention_in_days_for_cloudwatch_log_group" {
-  type = number
-}
 
