@@ -60,36 +60,6 @@ module "staging_postgres" {
   password = var.staging_db_password
   db_name  = var.staging_db_name
 }
-//
-//# SSM
-//module "dev_ssm" {
-//  source = "./ssm"
-//  name = var.project_name
-//  env = "dev"
-//  docs_user = var.docs_user
-//  docs_password = var.docs_password
-//  twilio_account_id = var.twilio_account_id
-//  twilio_auth_token = var.twilio_auth_token
-//  twilio_phone_number = var.twilio_phone_number
-//  sentry_dsn = var.sentry_dsn
-//  firebase_auth_json = var.firebase_auth_json
-//  s3_bucket_name = module.dev_bucket.s3-bucket-name
-//}
-//module "staging_ssm" {
-//  source = "./ssm"
-//  name = var.project_name
-//  env = "staging"
-//  docs_user = var.docs_user
-//  docs_password = var.docs_password
-//  twilio_account_id = var.twilio_account_id
-//  twilio_auth_token = var.twilio_auth_token
-//  twilio_phone_number = var.twilio_phone_number
-//  sentry_dsn = var.sentry_dsn
-//  firebase_auth_json = var.firebase_auth_json
-//  s3_bucket_name = module.staging_bucket.s3-bucket-name
-//}
-//
-//
 # ECR
 
 module "ecr" {
@@ -109,11 +79,7 @@ module "alb" {
   security_group_ids = [
     module.security_groups.open-security-group-id,
   ]
-  //acm_cert_arn = module.alb.acm-cert-arn
-  //domain_name = var.domain_name
 }
-//
-//
 module "prodaction_instance" {
   source = "./ec2"
   project_name = var.project_name
@@ -144,31 +110,6 @@ module "staging_instance" {
   vpc_id = module.vpc.vpc-id
   alb_listener_arn = module.alb.alb-listener-arn
 }
-//
-//
-//
-//module "dev_subdomain" {
-//  source = "./route53"
-//  domain_name = var.domain_name
-//  subdomain = "dev-petehealth"
-//  alb_zone_id = module.alb.alb-zone-id
-//  alb_dns_name = module.alb.alb-dns-name
-//  name = var.project_name
-//  env = "dev"
-//}
-//
-//module "staging_subdomain" {
-//  source       = "./route53"
-//  domain_name  = var.domain_name
-//  subdomain    = "staging-petehealth"
-//  alb_zone_id  = module.alb.alb-zone-id
-//  alb_dns_name = module.alb.alb-dns-name
-//  name = var.project_name
-//  env = "staging"
-//}
-//
-//
-//
 # IAM
 module "service_iam" {
   source   = "./service_iam_user"
@@ -176,19 +117,3 @@ module "service_iam" {
   username = "${var.project_name}-service-user"
 }
 
-#ACW
-module "prodaction_cloudwatch" {
-  source = "./acw"
-  name_for_cloudwatch_log_group = var.name_for_cloudwatch_log_group
-  retention_in_days_for_cloudwatch_log_group = var.retention_in_days_for_cloudwatch_log_group
-  project_name = var.project_name
-  env = "prodaction"
-}
-
-module "staging_cloudwatch" {
-  source = "./acw"
-  name_for_cloudwatch_log_group = var.name_for_cloudwatch_log_group
-  retention_in_days_for_cloudwatch_log_group = var.retention_in_days_for_cloudwatch_log_group
-  project_name = var.project_name
-  env = "staging"
-}
