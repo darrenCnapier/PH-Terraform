@@ -48,7 +48,7 @@ module "staging_postgres" {
   password = var.staging_db_password
   db_name  = var.staging_db_name
 }
-<<<<<<< HEAD
+
 
 
 //
@@ -81,8 +81,7 @@ module "staging_postgres" {
 //}
 //
 //
-=======
->>>>>>> 0b9204970ed2ef135b99bec991b890274b47e8f2
+
 # ECR
 
 module "ecr" {
@@ -92,21 +91,7 @@ module "ecr" {
 }
 
 
-<<<<<<< HEAD
 module "production_instance" {
-=======
-# ALB
-module "alb" {
-  source = "./alb"
-  name = var.project_name
-  public_subnet_ids = flatten([
-    module.vpc.public-subnet-ids])
-  security_group_ids = [
-    module.security_groups.open-security-group-id,
-  ]
-}
-module "prodaction_instance" {
->>>>>>> 0b9204970ed2ef135b99bec991b890274b47e8f2
   source = "./ec2"
   project_name = var.project_name
   env = "production"
@@ -133,10 +118,7 @@ module "staging_instance" {
     module.security_groups.private-security-group-id]
   vpc_id = module.vpc.vpc-id
 }
-<<<<<<< HEAD
 
-=======
->>>>>>> 0b9204970ed2ef135b99bec991b890274b47e8f2
 # IAM
 module "service_iam" {
   source   = "./service_iam_user"
@@ -144,7 +126,6 @@ module "service_iam" {
   username = "${var.project_name}-service-user"
 }
 
-<<<<<<< HEAD
 #ACW
 module "production_cloudwatch" {
   source = "./acw"
