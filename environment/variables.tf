@@ -76,4 +76,10 @@ variable "instance_volume_size" {
   type = number
 }
 
+variable "name_for_cloudwatch_log_group" {
+  type = string
+}
 
+variable "retention_in_days_for_cloudwatch_log_group" {
+  type = string
+}
