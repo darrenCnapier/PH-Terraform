@@ -81,3 +81,4 @@ id_rsa
 id_rsa.pub
 firebase-magic-auth-file.json
 .DS_Store
+*.zip

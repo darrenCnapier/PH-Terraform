@@ -8,10 +8,5 @@ resource "aws_ecr_repository" "this_ecr" {
   }
 }
 
-resource "aws_iam_role_policy_attachment" "ecr_policy" {
-  count = length(var.role_names)
-  role = var.role_names[count.index]
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess"
-}
 
 

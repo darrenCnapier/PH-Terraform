@@ -10,6 +10,7 @@ resource "aws_db_subnet_group" "this_db_subnet_group" {
   }
 }
 
+
 resource "aws_db_instance" "this_db" {
   identifier = "${var.name}-${var.env}"
   allocated_storage = "30"

@@ -31,20 +31,8 @@ module "security_groups" {
 }
 
 # RDS
-module "prodaction_postgres" {
-  source = "./rds"
-  name = var.project_name
-
-  env = "prodaction"
-  subnet_ids = flatten([
-    module.vpc.public-subnet-ids])
-  security_group_ids = [
-    module.security_groups.private-security-group-id,
-  ]
-
-  username = var.dev_db_username
-  password = var.dev_db_password
-  db_name = var.dev_db_name
+data "aws_db_instance" "production_postgres" {
+  db_instance_identifier = "database-1-instance-1"
 }
 
 module "staging_postgres" {
@@ -60,6 +48,8 @@ module "staging_postgres" {
   password = var.staging_db_password
   db_name  = var.staging_db_name
 }
+
+
 //
 //# SSM
 //module "dev_ssm" {
@@ -96,28 +86,13 @@ module "ecr" {
   source = "./ecr"
   name = "petehealth/petehealth_portal"
   project_name = var.project_name
-  role_names = [module.prodaction_instance.ec2-access-role-name, module.staging_instance.ec2-access-role-name]
 }
 
 
-# ALB
-module "alb" {
-  source = "./alb"
-  name = var.project_name
-  public_subnet_ids = flatten([
-    module.vpc.public-subnet-ids])
-  security_group_ids = [
-    module.security_groups.open-security-group-id,
-  ]
-  //acm_cert_arn = module.alb.acm-cert-arn
-  //domain_name = var.domain_name
-}
-//
-//
-module "prodaction_instance" {
+module "production_instance" {
   source = "./ec2"
   project_name = var.project_name
-  env = "prodaction"
+  env = "production"
   instance_type = var.instance_type
   subnet_id = module.vpc.public-subnet-ids[0]
   ssh_key_path = var.instance_ssh_key_path
@@ -126,8 +101,6 @@ module "prodaction_instance" {
     module.security_groups.public-security-group-id,
     module.security_groups.private-security-group-id]
   vpc_id = module.vpc.vpc-id
-  #subdomain_name = module.dev_subdomain.domain-name
-  alb_listener_arn = module.alb.alb-listener-arn
 }
 
 module "staging_instance" {
@@ -142,33 +115,8 @@ module "staging_instance" {
     module.security_groups.public-security-group-id,
     module.security_groups.private-security-group-id]
   vpc_id = module.vpc.vpc-id
-  alb_listener_arn = module.alb.alb-listener-arn
 }
-//
-//
-//
-//module "dev_subdomain" {
-//  source = "./route53"
-//  domain_name = var.domain_name
-//  subdomain = "dev-petehealth"
-//  alb_zone_id = module.alb.alb-zone-id
-//  alb_dns_name = module.alb.alb-dns-name
-//  name = var.project_name
-//  env = "dev"
-//}
-//
-//module "staging_subdomain" {
-//  source       = "./route53"
-//  domain_name  = var.domain_name
-//  subdomain    = "staging-petehealth"
-//  alb_zone_id  = module.alb.alb-zone-id
-//  alb_dns_name = module.alb.alb-dns-name
-//  name = var.project_name
-//  env = "staging"
-//}
-//
-//
-//
+
 # IAM
 module "service_iam" {
   source   = "./service_iam_user"
@@ -177,12 +125,12 @@ module "service_iam" {
 }
 
 #ACW
-module "prodaction_cloudwatch" {
+module "production_cloudwatch" {
   source = "./acw"
   name_for_cloudwatch_log_group = var.name_for_cloudwatch_log_group
   retention_in_days_for_cloudwatch_log_group = var.retention_in_days_for_cloudwatch_log_group
   project_name = var.project_name
-  env = "prodaction"
+  env = "production"
 }
 
 module "staging_cloudwatch" {
@@ -191,4 +139,8 @@ module "staging_cloudwatch" {
   retention_in_days_for_cloudwatch_log_group = var.retention_in_days_for_cloudwatch_log_group
   project_name = var.project_name
   env = "staging"
+}
+
+module "lambda" {
+  source = "./lambda"
 }

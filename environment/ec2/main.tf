@@ -54,7 +54,7 @@ resource "aws_eip" "this_ip" {
   vpc = true
   instance = aws_instance.this_instance.id
   tags = {
-    Name = "${var.project_name}_${var.env}_eip_true"
+    Name = "${var.project_name}_${var.env}_eip"
     Terraform = true
     Enviroment = var.env
     Project = var.project_name
@@ -87,51 +87,13 @@ data "aws_ami" "amazon-linux-2" {
   }
 }
 
-resource "aws_alb_target_group" "group" {
-  name = "${var.project_name}-${var.env}-tg"
-  port = 80
-  protocol = "HTTP"
-  vpc_id = var.vpc_id
-
-  health_check {
-    path = "/api/health"
-  }
-  tags = {
-    Name = "${var.project_name}_${var.env}_alb_target_group"
-    Terraform = true
-    Enviroment = var.env
-    Project = var.project_name
-  }
-
-}
-
-//resource "aws_alb_listener_rule" "this_alb_listener_rule" {
-//  listener_arn = var.alb_listener_arn
-//
-//  action {
-//    type = "forward"
-//    target_group_arn = aws_alb_target_group.group.arn
-//  }
-//
-//  condition {
-//    field = "host-header"
-//    values = [
-//      var.subdomain_name]
-//  }
-//}
-
-
-resource "aws_alb_target_group_attachment" "this" {
-  target_group_arn = aws_alb_target_group.group.arn
-  target_id = aws_instance.this_instance.id
-  port = 80
-}
-
-
 
 resource "aws_iam_role_policy_attachment" "this_cloudwatch_policy" {
   role = aws_iam_role.this_ec2_access_role.name
   policy_arn = "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
 }
 
-
+resource "aws_iam_role_policy_attachment" "this_ecr_policy" {
+  role = aws_iam_role.this_ec2_access_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess"
+}
