@@ -16,7 +16,7 @@ resource "aws_db_instance" "this_db" {
   allocated_storage = "30"
   engine = "postgres"
   engine_version = "10.6"
-  instance_class = "db.t2.micro"
+  instance_class = var.instance_type
   publicly_accessible = true
   name = var.db_name
   username = var.username

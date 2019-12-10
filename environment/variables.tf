@@ -36,15 +36,15 @@ variable "whitelisted_cidrs" {
 }
 
 
-variable "dev_db_username" {
+variable "prod_db_username" {
   type = string
 }
 
-variable "dev_db_password" {
+variable "prod_db_password" {
   type = string
 }
 
-variable "dev_db_name" {
+variable "prod_db_name" {
   type = string
 }
 

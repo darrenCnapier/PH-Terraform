@@ -31,8 +31,19 @@ module "security_groups" {
 }
 
 # RDS
-data "aws_db_instance" "production_postgres" {
-  db_instance_identifier = "database-1-instance-1"
+module "prod_postgres" {
+  source     = "./rds"
+  name       = var.project_name
+  env        = "prod"
+  subnet_ids = flatten([module.vpc.private-subnet-ids, module.vpc.public-subnet-ids])
+  security_group_ids = [
+    module.security_groups.private-security-group-id,
+    module.security_groups.public-security-group-id,
+  ]
+  username = var.prod_db_username
+  password = var.prod_db_password
+  db_name  = var.prod_db_name
+  instance_type = "db.t3.medium"
 }
 
 module "staging_postgres" {
@@ -47,37 +58,18 @@ module "staging_postgres" {
   username = var.staging_db_username
   password = var.staging_db_password
   db_name  = var.staging_db_name
+  instance_type = "db.t3.micro"
 }
 
 
 
 //
 //# SSM
-//module "dev_ssm" {
-//  source = "./ssm"
-//  name = var.project_name
-//  env = "dev"
-//  docs_user = var.docs_user
-//  docs_password = var.docs_password
-//  twilio_account_id = var.twilio_account_id
-//  twilio_auth_token = var.twilio_auth_token
-//  twilio_phone_number = var.twilio_phone_number
-//  sentry_dsn = var.sentry_dsn
-//  firebase_auth_json = var.firebase_auth_json
-//  s3_bucket_name = module.dev_bucket.s3-bucket-name
+//module "prod_ssm" {
+
 //}
 //module "staging_ssm" {
-//  source = "./ssm"
-//  name = var.project_name
-//  env = "staging"
-//  docs_user = var.docs_user
-//  docs_password = var.docs_password
-//  twilio_account_id = var.twilio_account_id
-//  twilio_auth_token = var.twilio_auth_token
-//  twilio_phone_number = var.twilio_phone_number
-//  sentry_dsn = var.sentry_dsn
-//  firebase_auth_json = var.firebase_auth_json
-//  s3_bucket_name = module.staging_bucket.s3-bucket-name
+
 //}
 //
 //

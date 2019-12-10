@@ -186,3 +186,22 @@ resource "aws_lambda_function" "points" {
   }
 }
 
+//resource "aws_cloudwatch_event_rule" "points_rule" {
+//  name = ""
+//  description = "Run weekly, Sundays at 7 PM PST"
+//  schedule_expression = ""
+//}
+
+//resource "aws_cloudwatch_event_target" "points_rule_target" {
+//  rule = aws_cloudwatch_event_rule.points_rule.name
+//  target_id = "points_rule_target"
+//  arn = aws_lambda_function.points.arn
+//}
+//
+//resource "aws_lambda_permission" "allow_cloudwatch_to_call_points_rule" {
+//  statement_id = "PointsAllowExecutionFromCloudWatch"
+//  action = "lambda:InvokeFunction"
+//  function_name = aws_lambda_function.points.function_name
+//  principal = "events.amazonaws.com"
+//  source_arn = aws_cloudwatch_event_rule.points_rule.arn
+//}
