@@ -37,8 +37,7 @@ module "prod_postgres" {
   env        = "prod"
   subnet_ids = flatten([module.vpc.private-subnet-ids, module.vpc.public-subnet-ids])
   security_group_ids = [
-    module.security_groups.private-security-group-id,
-    module.security_groups.public-security-group-id,
+    module.security_groups.open-security-group-id,
   ]
   username = var.prod_db_username
   password = var.prod_db_password
@@ -52,8 +51,7 @@ module "staging_postgres" {
   env        = "staging"
   subnet_ids = flatten([module.vpc.private-subnet-ids, module.vpc.public-subnet-ids])
   security_group_ids = [
-    module.security_groups.private-security-group-id,
-    module.security_groups.public-security-group-id,
+    module.security_groups.open-security-group-id,
   ]
   username = var.staging_db_username
   password = var.staging_db_password

@@ -15,7 +15,7 @@ resource "aws_db_instance" "this_db" {
   identifier = "${var.name}-${var.env}"
   allocated_storage = "30"
   engine = "postgres"
-  engine_version = "10.6"
+  engine_version = "10.10"
   instance_class = var.instance_type
   publicly_accessible = true
   name = var.db_name
