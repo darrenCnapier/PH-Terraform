@@ -25,6 +25,7 @@ resource "aws_db_instance" "this_db" {
   db_subnet_group_name = aws_db_subnet_group.this_db_subnet_group.id
   skip_final_snapshot = "true"
   backup_retention_period = 7
+  ca_cert_identifier = "rds-ca-2019"
 
   tags = {
     Name = "${var.name}_${var.env}_db_instance"
