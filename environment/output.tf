@@ -11,12 +11,13 @@ output "access_key" {
 output "iam_access_key_secret" {
   value = module.service_iam.iam_access_key_secret
 }
-output "repository_url" {
-  value = module.ecr.repository_url
-}
-//
+
 output "staging_instance_ip" {
   value = module.staging_instance.instance_ip
+}
+
+output "prod_instance_ip" {
+  value = module.production_instance.instance_ip
 }
 
 //output "cloudwatch_log_stream_names" {

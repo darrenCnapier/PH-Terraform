@@ -23,6 +23,11 @@ resource "aws_iam_role_policy_attachment" "s3_role_attach" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
 }
 
+resource "aws_iam_role_policy_attachment" "vpc_role_attach" {
+  role = aws_iam_role.iam_for_lambda.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+}
+
 resource "aws_iam_role_policy_attachment" "lambda_role_attach" {
   role = aws_iam_role.iam_for_lambda.name
   policy_arn = "arn:aws:iam::aws:policy/AWSLambdaFullAccess"
@@ -114,9 +119,9 @@ resource "aws_lambda_function" "copay" {
 
 resource "aws_lambda_function" "issues" {
   filename = data.archive_file.zip.output_path
-  function_name = "issues"
+  function_name = "issues_${var.env}_job"
   role = aws_iam_role.iam_for_lambda.arn
-  handler = "dwh_issue_rpt_job.handler"
+  handler = "run_lambda.handler"
   memory_size = 256
   source_code_hash = data.archive_file.zip.output_base64sha256
 
@@ -129,36 +134,41 @@ resource "aws_lambda_function" "issues" {
 
   environment {
     variables = {
-      PGHOST = ""
-      PGDATABASE = ""
-      PGUSER = ""
-      PGPASSWORD = ""
-      IVINEX_UNAME = ""
-      IVINEX_PWD = ""
-      CL_UNAME = ""
-      CL_PWD = ""
-      GM_ADR = ""
-      GM_PWD = ""
-      APP_ROOT = ""
-      IVINEX_DATA = ""
-      RUBYLIB = ""
-      TW_SID = ""
-      TW_TOKEN = ""
-      TW_FROM = ""
+      PGHOST = var.pg_host
+      PGDATABASE = var.pg_database
+      PGUSER = var.pg_username
+      PGPASSWORD = var.pg_password
+      IVINEX_UNAME = var.ivinex_username
+      IVINEX_PWD = var.ivinex_password
+      CL_UNAME = var.cl_username
+      CL_PWD = var.cl_password
+      GM_ADR = var.gmail_email
+      GM_PWD = var.gmail_password
+      APP_ROOT = "."
+      IVINEX_DATA = "./data"
+      RUBYLIB = "./lib"
+      TW_SID = var.twilio_sid
+      TW_TOKEN = var.twilio_token
+      TW_FROM = var.twilio_from
+      CMD = "./dwh_issue_rpt.rb"
     }
   }
 }
 
 resource "aws_lambda_function" "points" {
   filename = data.archive_file.zip.output_path
-  function_name = "points"
+  function_name = "points_${var.env}_job"
   role = aws_iam_role.iam_for_lambda.arn
-  handler = "dwh_points_rpt_job.handler"
+  handler = "run_lambda.handler"
   memory_size = 256
   source_code_hash = data.archive_file.zip.output_base64sha256
 
   runtime = "ruby2.5"
   timeout = 120
+  vpc_config {
+    security_group_ids = var.security_group_ids
+    subnet_ids = var.subnet_ids
+  }
 
   lifecycle {
     ignore_changes = ["source_code_hash", "last_modified"]
@@ -166,22 +176,23 @@ resource "aws_lambda_function" "points" {
 
   environment {
     variables = {
-      PGHOST = ""
-      PGDATABASE = ""
-      PGUSER = ""
-      PGPASSWORD = ""
-      IVINEX_UNAME = ""
-      IVINEX_PWD = ""
-      CL_UNAME = ""
-      CL_PWD = ""
-      GM_ADR = ""
-      GM_PWD = ""
-      APP_ROOT = ""
-      IVINEX_DATA = ""
-      RUBYLIB = ""
-      TW_SID = ""
-      TW_TOKEN = ""
-      TW_FROM = ""
+      PGHOST = var.pg_host
+      PGDATABASE = var.pg_database
+      PGUSER = var.pg_username
+      PGPASSWORD = var.pg_password
+      IVINEX_UNAME = var.ivinex_username
+      IVINEX_PWD = var.ivinex_password
+      CL_UNAME = var.cl_username
+      CL_PWD = var.cl_password
+      GM_ADR = var.gmail_email
+      GM_PWD = var.gmail_password
+      APP_ROOT = "."
+      IVINEX_DATA = "./data"
+      RUBYLIB = "./lib:./vendor"
+      TW_SID = var.twilio_sid
+      TW_TOKEN = var.twilio_token
+      TW_FROM = var.twilio_from
+      CMD = "dwh_points_rpt.rb"
     }
   }
 }
@@ -189,7 +200,7 @@ resource "aws_lambda_function" "points" {
 //resource "aws_cloudwatch_event_rule" "points_rule" {
 //  name = ""
 //  description = "Run weekly, Sundays at 7 PM PST"
-//  schedule_expression = ""
+//  schedule_expression = "cron(8 3 * * 1)"
 //}
 
 //resource "aws_cloudwatch_event_target" "points_rule_target" {

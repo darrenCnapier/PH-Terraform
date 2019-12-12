@@ -74,12 +74,23 @@ module "staging_postgres" {
 
 # ECR
 
-module "ecr" {
+module "ecr_portal" {
   source = "./ecr"
-  name = "petehealth/petehealth_portal"
+  name = "petehealth/petehealth_php_portal"
   project_name = var.project_name
 }
 
+module "ecr_frontend" {
+  source = "./ecr"
+  name = "petehealth/petehealth_dashboard_frontend"
+  project_name = var.project_name
+}
+
+module "ecr_api" {
+  source = "./ecr"
+  name = "petehealth/petehealth_dashboard_api"
+  project_name = var.project_name
+}
 
 module "production_instance" {
   source = "./ec2"
@@ -133,6 +144,22 @@ module "staging_cloudwatch" {
   env = "staging"
 }
 
-module "lambda" {
+module "lambda_staging" {
   source = "./lambda"
+  env = "staging"
+  ivinex_username = var.ivinex_username
+  ivinex_password = var.ivinex_password
+  cl_username = var.cl_username
+  cl_password = var.cl_password
+  gmail_email = var.gmail_email
+  gmail_password = var.gmail_password
+  twilio_sid = var.twilio_sid
+  twilio_token = var.twilio_token
+  twilio_from = var.twilio_from
+  pg_host = module.staging_postgres.db-host
+  pg_database = var.staging_db_name
+  pg_username = var.staging_db_username
+  pg_password = var.staging_db_password
+  subnet_ids = flatten([module.vpc.private-subnet-ids, module.vpc.public-subnet-ids])
+  security_group_ids = [module.security_groups.open-security-group-id]
 }
