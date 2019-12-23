@@ -5,11 +5,11 @@ output "cw_log_group_ids" {
 
 output "cw_log_group_names" {
   description = ""
-  value       = "${aws_cloudwatch_log_group.cw_log_group.*.name}"
+  value       = aws_cloudwatch_log_group.cw_log_group.*.name
 }
 
 output "cloudwatch_log_stream_names" {
   description = ""
-  value       = "${aws_cloudwatch_log_stream.cloudwatch_log_stream.*.name}"
+  value       = aws_cloudwatch_log_stream.cloudwatch_log_stream.*.name
 }
 

@@ -8,9 +8,9 @@ variable "retention_in_days_for_cloudwatch_log_group" {
 }
 
 variable "project_name" {
-  type = "string"
+  type = string
 }
 
 variable "env" {
-  type = "string"
+  type = string
 }

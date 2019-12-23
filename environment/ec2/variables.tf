@@ -1,22 +1,22 @@
 variable "project_name" {
-  type = "string"
+  type = string
 }
 
 variable "env" {
-  type = "string"
+  type = string
 }
 
 variable "instance_type" {
-  type = "string"
+  type = string
   default = "t2.micro"
 }
 
 variable "subnet_id" {
-  type = "string"
+  type = string
 }
 
 variable "ssh_key_path" {
-  type = "string"
+  type = string
 }
 
 variable "volume_size" {
@@ -28,6 +28,6 @@ variable "security_groups" {
 }
 
 variable "vpc_id" {
-  type = "string"
+  type = string
 }
 

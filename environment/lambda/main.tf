@@ -42,6 +42,12 @@ data "archive_file" "zip" {
   output_path = "default.zip"
 }
 
+resource "aws_lambda_layer_version" "this_lambda_layer" {
+  layer_name = "ruby-pg"
+  filename   = "lambda/layer.zip" # change it
+
+  compatible_runtimes = ["ruby2.5"]
+}
 
 resource "aws_lambda_function" "appointment_reminders" {
   filename = data.archive_file.zip.output_path
@@ -51,11 +57,13 @@ resource "aws_lambda_function" "appointment_reminders" {
   memory_size = 256
   source_code_hash = data.archive_file.zip.output_base64sha256
 
+  layers = [aws_lambda_layer_version.this_lambda_layer.arn]
+
   runtime = "ruby2.5"
   timeout = 120
 
   lifecycle {
-    ignore_changes = ["source_code_hash", "last_modified"]
+    ignore_changes = [source_code_hash, last_modified]
   }
 
   environment {
@@ -88,11 +96,13 @@ resource "aws_lambda_function" "copay" {
   memory_size = 256
   source_code_hash = data.archive_file.zip.output_base64sha256
 
+  layers = [aws_lambda_layer_version.this_lambda_layer.arn]
+
   runtime = "ruby2.5"
   timeout = 120
 
   lifecycle {
-    ignore_changes = ["source_code_hash", "last_modified"]
+    ignore_changes = [source_code_hash, last_modified]
   }
 
   environment {
@@ -125,11 +135,13 @@ resource "aws_lambda_function" "issues" {
   memory_size = 256
   source_code_hash = data.archive_file.zip.output_base64sha256
 
+  layers = [aws_lambda_layer_version.this_lambda_layer.arn]
+
   runtime = "ruby2.5"
   timeout = 120
 
   lifecycle {
-    ignore_changes = ["source_code_hash", "last_modified"]
+    ignore_changes = [source_code_hash, last_modified]
   }
 
   environment {
@@ -163,6 +175,8 @@ resource "aws_lambda_function" "points" {
   memory_size = 256
   source_code_hash = data.archive_file.zip.output_base64sha256
 
+  layers = [aws_lambda_layer_version.this_lambda_layer.arn]
+
   runtime = "ruby2.5"
   timeout = 120
   vpc_config {
@@ -171,7 +185,7 @@ resource "aws_lambda_function" "points" {
   }
 
   lifecycle {
-    ignore_changes = ["source_code_hash", "last_modified"]
+    ignore_changes = [source_code_hash, last_modified]
   }
 
   environment {
@@ -193,6 +207,50 @@ resource "aws_lambda_function" "points" {
       TW_TOKEN = var.twilio_token
       TW_FROM = var.twilio_from
       CMD = "dwh_points_rpt.rb"
+    }
+  }
+}
+
+resource "aws_lambda_function" "avail_visits" {
+  filename = data.archive_file.zip.output_path
+  function_name = "avail_visits_${var.env}_job"
+  role = aws_iam_role.iam_for_lambda.arn
+  handler = "run_lambda.handler"
+  memory_size = 256
+  source_code_hash = data.archive_file.zip.output_base64sha256
+
+  layers = [aws_lambda_layer_version.this_lambda_layer.arn]
+
+  runtime = "ruby2.5"
+  timeout = 120
+  vpc_config {
+    security_group_ids = var.security_group_ids
+    subnet_ids = var.subnet_ids
+  }
+
+  lifecycle {
+    ignore_changes = [source_code_hash, last_modified]
+  }
+
+  environment {
+    variables = {
+      PGHOST = var.pg_host
+      PGDATABASE = var.pg_database
+      PGUSER = var.pg_username
+      PGPASSWORD = var.pg_password
+      IVINEX_UNAME = var.ivinex_username
+      IVINEX_PWD = var.ivinex_password
+      CL_UNAME = var.cl_username
+      CL_PWD = var.cl_password
+      GM_ADR = var.gmail_email
+      GM_PWD = var.gmail_password
+      APP_ROOT = "."
+      IVINEX_DATA = "./data"
+      RUBYLIB = "./lib:./vendor"
+      TW_SID = var.twilio_sid
+      TW_TOKEN = var.twilio_token
+      TW_FROM = var.twilio_from
+      CMD = "dwh_avail_visits_rpt.rb"
     }
   }
 }
